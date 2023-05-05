@@ -1,0 +1,92 @@
+class BassCrossBuster : BusterBase
+{
+	// No need for A_SetElementTranslation.
+	action void A_EmotionCheck(int flags = 0)
+	{
+        // Cast and null-check the class:
+        let bcros = BassCrossPlayer(self);
+        if (!bcros)
+            return;
+
+		switch (bcros.curEmotion) {
+			case BassCrossPlayer.Emotion_Evil:
+			{
+				A_OverlayTranslation(99, "DarkSoul");
+				A_OverlayRenderStyle(99, STYLE_SUBTRACT);
+				A_OverlayAlpha(99, 0.50);
+				break;
+			}
+			case BassCrossPlayer.Emotion_FullSynchro:
+			{
+				A_OverlayTranslation(99, "FullSynchro");
+				A_OverlayRenderStyle(99, STYLE_ADD);
+				A_OverlayAlpha(99, 0.25);
+				break;
+			}
+			default:
+				break;
+		}
+	}
+	// No need for A_FireChargeShot... YET. If I implement a way to swap between Gold and Silver, then yeah.
+	Default
+	{
+		Tag "BassCross Buster";
+	}
+	States
+	{
+		Ready:
+			NBST A 1 {
+				A_WeaponReady();	// no need for zoom or reload, he has no styles (he has no grace)
+				A_OverlayTranslation(OverlayID(), "BCMMGold");
+			}
+			Loop;
+		Select:
+			TNT1 A 0 A_Overlay(99,"LayerChecker");
+			TNT1 A 0 A_OverlayTranslation(OverlayID(), "BCMMGold");
+			TNT1 A 0 A_SetInventory("PrimaryCharge", 0);
+			NBST A 1 A_Raise;
+			Loop;
+		Fire:
+			NBST A 0 {
+				A_OverlayFlags(5, PSPF_POWDOUBLE|PSPF_CVARFAST, true);
+				A_OverlayFlags(-1, PSPF_POWDOUBLE|PSPF_CVARFAST, true);
+				A_Overlay(5,"ChargeSoundFunction"); //Starts charge sound.
+				A_Overlay(-1, "ChargeEffectFunction"); // starts charge effect
+			}
+			Charge:
+				NBST A 1 A_GiveInventory("PrimaryCharge", 1);
+				NBST A 0 A_Refire("Charge");
+				NBST A 0 A_JumpIfInventory("PrimaryCharge", 100, "FireChargeShot");
+				NBST A 0 A_JumpIfInventory("PrimaryCharge", 50, "FireMidChargeShot");
+				Goto FireNormalShot;
+		AltFire:
+		FireNormalShot:
+			NBST A 1 A_SetInventory("PrimaryCharge", 0);
+			NBST A 0 A_GiveInventory("Firing", 1);
+			NBST B 1 Bright {
+				A_FireProjectile("UnchargedBusterTracer", frandom(-2.85, 2.85), 0, 4, 0, 0, frandom(-2.85, 2.85));
+				A_FireProjectile("UnchargedBusterTracer", frandom(-2.85, 2.85), 0, 4, 0, 0, frandom(-2.85, 2.85));
+				A_FireProjectile("UnchargedBusterTracer", frandom(-2.85, 2.85), 0, 4, 0, 0, frandom(-2.85, 2.85));
+				A_StartSound("weapons/buster/pew", CHAN_WEAPON);
+				A_Overlay(PSP_FLASH, "Flash");	// Flash layer
+			}
+			Goto Fired;
+		FireChargeShot:
+			NBST A 1 {
+				A_SetInventory("PrimaryCharge", 0);
+				A_GiveInventory("Firing", 1);
+			}
+			NBST B 1 Bright {
+				A_FireProjectile("HelzRolling", 11.25, 0, -4);
+				A_FireProjectile("HelzRolling", -11.25, 0, 4);
+				A_StartSound("weapons/buster/pew", CHAN_WEAPON);
+				A_Overlay(PSP_FLASH, "Flash");	// Flash layer
+			}
+			Goto Fired;
+
+		Flash:
+			BSFL A 1 Bright A_OverlayTranslation(OverlayID(), "BCMMGold");
+			BCFL ABC 1 Bright A_OverlayTranslation(OverlayID(), "BCMMGold"); // Triple Buster flash
+			Stop;
+	}
+}

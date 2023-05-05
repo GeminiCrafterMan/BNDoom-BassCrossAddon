@@ -1,0 +1,5 @@
+version "4.1.0" // updated to 4.1.0, because i'm pretty sure all mobile ports of gzdoom are semi-up-to-date
+
+#include "ZScript/BassCrossPlayer.zsc"
+
+#include "ZScript/Weapons/BassCrossBuster.zsc"
