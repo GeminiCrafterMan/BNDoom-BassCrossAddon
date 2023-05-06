@@ -1,5 +1,25 @@
 class BassCrossBuster : BusterBase
 {
+	action void A_BassCrossTranslate()
+	{
+		// Cast and null-check the class:
+		let bcros = BassCrossPlayer(self);
+		if (!bcros)
+			return;
+
+		switch (bcros.curStyleType) {
+			case BassCrossPlayer.Form_Gold:
+				A_OverlayTranslation(OverlayID(), "BCMMGold");
+				break;
+			case BassCrossPlayer.Form_Silver:
+				A_OverlayTranslation(OverlayID(), "BCMMSilver");
+				break;
+			default:
+				A_OverlayTranslation(OverlayID(), "MMNormStyl");
+				A_Print("Invalid BassCross type.");
+				break;
+		}
+	}
 	// No need for A_SetElementTranslation.
 	// No need for A_EmotionCheck.
 	// No need for A_FireChargeShot... YET. If I implement a way to swap between Gold and Silver, then yeah.
@@ -11,13 +31,13 @@ class BassCrossBuster : BusterBase
 	{
 		Ready:
 			NBST A 1 {
-				A_WeaponReady(WRF_ALLOWUSER1);	// no need for zoom or reload, he has no styles (he has no grace)
-				A_OverlayTranslation(OverlayID(), "BCMMGold");
+				A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWUSER1);	// no need for zoom or reload, he has no styles (he has no grace)
+				A_BassCrossTranslate();
 			}
 			Loop;
 		Select:
 			TNT1 A 0 A_Overlay(99,"TopLayer");
-			TNT1 A 0 A_OverlayTranslation(OverlayID(), "BCMMGold");
+			TNT1 A 0 A_BassCrossTranslate();
 			TNT1 A 0 A_SetInventory("PrimaryCharge", 0);
 			NBST A 1 A_Raise;
 			Loop;
@@ -76,8 +96,28 @@ class BassCrossBuster : BusterBase
 			stop;
 
 		Flash:
-			BSFL A 1 Bright A_OverlayTranslation(OverlayID(), "BCMMGold");
-			BCFL ABC 1 Bright A_OverlayTranslation(OverlayID(), "BCMMGold"); // Triple Buster flash
+			BSFL A 1 Bright A_BassCrossTranslate();
+			BCFL ABC 1 Bright A_BassCrossTranslate(); // Triple Buster flash
 			Stop;
+
+		Reload:
+			NBST A 10 {
+				// Cast and null-check the class:
+				let bcros = BassCrossPlayer(self);
+				if (bcros) {
+					switch (bcros.curStyleType) {
+						case BassCrossPlayer.Form_Gold:
+							bcros.EmotionFace = "BCSFAC";
+							bcros.curStyleType = BassCrossPlayer.Form_Silver;
+							break;
+						case BassCrossPlayer.Form_Silver:
+							bcros.EmotionFace = "BCGFAC";
+							bcros.curStyleType = BassCrossPlayer.Form_Gold;
+							break;
+						default:
+							break;
+					}
+				}
+			}
 	}
 }

@@ -1,8 +1,14 @@
 class BassCrossPlayer : NetNaviPlayer
 {
+	// a sort of smaller style type enum with only two values -- gold and silver
+	enum StyleTypeValues
+	{
+		Form_Gold,
+		Form_Silver
+	}
 	Default
 	{
-		NetNaviPlayer.EmotionFace "BCFAC";
+		NetNaviPlayer.EmotionFace "BCGFAC";
 		Player.DisplayName "BassCross";
 		Player.StartItem "BassCrossBuster";
 		Player.WeaponSlot 1, "BassCrossBuster";
