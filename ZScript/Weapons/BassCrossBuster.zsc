@@ -44,8 +44,8 @@ class BassCrossBuster : BusterBase
 				A_GiveInventory("Firing", 1);
 			}
 			NBST B 1 Bright {
-				A_FireProjectile("HelzRolling", 11.25, 0, -4);
-				A_FireProjectile("HelzRolling", -11.25, 0, 4);
+				A_FireProjectile("HelzRolling", 11.25, 0, -3);
+				A_FireProjectile("HelzRolling", -11.25, 0, 3);
 //				A_StartSound("weapons/helzrolling", CHAN_WEAPON);
 				A_Overlay(PSP_FLASH, "Flash");	// Flash layer
 			}
