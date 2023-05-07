@@ -37,6 +37,7 @@ class BassCrossBuster : BusterBase
 				A_StartSound("weapons/gun", CHAN_WEAPON);
 				A_Overlay(PSP_FLASH, "Flash");	// Flash layer
 				player.SetPSprite(OverlayID(), ResolveState("Fired"));
+//				player.SetPSprite(OverlayID(), ResolveState("Barrier"));
 				return;
 			case BassCrossPlayer.Form_Silver:
 				A_FireProjectile("HelzRolling", 0, 0, -12);
